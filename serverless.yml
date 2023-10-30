@@ -1,0 +1,61 @@
+org: aquijuz
+app: auth-fiap
+service: auth-fiap
+frameworkVersion: "3"
+useDotenv: true
+
+provider:
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - Content-Type
+        - Access-Control-Allow-Origin
+        - Access-Control-Allow-Headers
+        - Access-Control-Allow-Methods
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+  logs:
+    httpApi: true
+
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+ 
+  environment:
+    RDS_DB_HOST: ${param:RDS_DB_HOST}
+    RDS_DB_PORT: ${param:RDS_DB_PORT}
+    RDS_DB_USER: ${param:RDS_DB_USER}
+    RDS_DB_PASSWORD: ${param:RDS_DB_PASSWORD}
+    RDS_DB_DATABASE: ${param:RDS_DB_DATABASE}
+
+functions:
+  createUser:
+    handler: src/functions/signUp.createUser
+    events:
+      - httpApi:
+          path: /api/signup
+          method: post
+
+  # auth:
+  #   handler: src/functions/auth.handler
+    
+  # signInUser:
+  #   handler: src/functions/signIn.handler
+  #   events:
+  #     - httpApi:
+  #         path: /api/signin
+  #         method: post
+  #         authorizer: auth
+
+custom:
+  serverless-offline:
+    httpPort: 3001
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
